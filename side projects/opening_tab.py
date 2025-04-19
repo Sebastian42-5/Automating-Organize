@@ -1,6 +1,6 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QWidget, QVBoxLayout
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QWidget, QVBoxLayout, QListWidget
 from PyQt5.QtGui import QIcon
 from functools import partial
 import sys
@@ -60,17 +60,32 @@ class MyWindow(QMainWindow):
 
 
 
-        self.scroll_area = QtWidgets.QScrollArea()
+        # self.scroll_area = QtWidgets.QScrollArea()
 
-        self.scroll_area.setWidgetResizable(True)
+        # self.scroll_area.setWidgetResizable(True)
 
-        self.scroll_content = QWidget()
+        # self.scroll_content = QWidget()
 
-        self.scroll_layout = QVBoxLayout(self.scroll_content)
+        # self.scroll_layout = QVBoxLayout(self.scroll_content)
 
-        self.scroll_area.setWidget(self.scroll_content)
+        # self.scroll_area.setWidget(self.scroll_content)
 
-        self.layout_display.addWidget(self.scroll_area)
+        # self.layout_display.addWidget(self.scroll_area)
+
+        self.shortcut_list = QtWidgets.QListWidget()
+
+        self.shortcut_list.setDragDropMode(QtWidgets.QAbstractItemView.InternalMove)
+
+        self.shortcut_list.setDefaultDropAction(Qt.MoveAction)
+
+        self.shortcut_list.setSpacing(4)
+
+        self.shortcut_list.setStyleSheet('font-size: 14px; padding: 6px')
+
+        self.layout_display.addWidget(self.shortcut_list)
+
+
+        self.shortcut_list.model().rowsMoved.connect(self.save_shortcut_order)
 
 
 
@@ -115,24 +130,36 @@ class MyWindow(QMainWindow):
 
             open_btn.setStyleSheet('padding: 8px; font-size: 14px;')
 
-
             open_btn.clicked.connect(partial(self.open_url_program, urls))
-        
+
+
+
+            edit_btn = QPushButton('✎')
+
+            edit_btn.setMinimumSize(30, 30)
+
+            edit_btn.clicked.connect(partial(self.editshortcut, i))
+
+
+
 
             delete_btn = QPushButton('X')
-
-            delete_btn.setStyleSheet('padding: 6px;')
 
             delete_btn.setMinimumSize(30, 30)
 
             delete_btn.clicked.connect(partial(self.delete_shortcut_by_name, name, row_widget))
 
 
+
             row_layout.addWidget(open_btn)
+
+            row_layout.addWidget(edit_btn)
+
             row_layout.addWidget(delete_btn)
 
-            row_layout.setContentsMargins(0, 0, 0, 0)
 
+
+            row_layout.setContentsMargins(0, 0, 0, 0)
 
             self.scroll_layout.addWidget(row_widget)
 
@@ -231,6 +258,76 @@ class MyWindow(QMainWindow):
         self.refresh_buttons()
 
         dialog.accept()
+
+    
+    def save_edited_shortcut(self, dialog, index, name_input, urls_input):
+
+        name = name_input.text().strip()
+
+        urls = []
+
+        for line in urls_input.toPlainText().strip().split('\n'):
+            line = line.strip()
+
+            if line:
+                urls.append(line)
+        
+        if not name or not urls:
+            QtWidgets.QMessageBox.warning(self, 'Invalid input', 'Please enter a name and at least one valid URL/program.')
+
+        self.shortcuts[index] = {'name': name, 'urls': urls}
+
+        save_shortcuts(self.shortcuts)
+
+        self.refresh_buttons()
+
+        dialog.accept() 
+
+
+    
+    def edit_shortcut(self, index):
+
+        shortcut = self.shortcuts[index]
+
+        dialog = QtWidgets.QDialog(self)
+
+        dialog.setWindowTitle('Edit shortcut')
+
+        dialog.setFixedSize(300, 300)
+
+
+        layout = QtWidgets.QVBoxLayout(dialog)
+
+        name_label = QLabel('Edit name:')
+
+        name_input = QtWidgets.QLineEdit(shortcut['name'])
+
+
+        urls_label = QLabel('Edit URLs/programs (enter one per line):')
+
+        urls_input = QtWidgets.QPlainTextEdit('\n'.join(shortcut['urls']))
+
+
+        save_btn = QPushButton('Save changes')
+
+        save_btn.clicked.connect(partial(self.save_edited_shortcut, dialog, index, name_input, urls_input))
+
+
+        layout.addWidget(name_label)
+
+        layout.addWidget(name_input)
+
+        layout.addWidget(urls_label)
+
+        layout.addWidget(urls_input)
+
+        layout.addWidget(save_btn)
+
+
+        dialog.setLayout(layout)
+
+        dialog.exec_()
+
     
 
 
