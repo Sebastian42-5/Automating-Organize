@@ -1,0 +1,38 @@
+[
+    {
+        "name": "Homework setup",
+        "urls": [
+            "https://moodle.dawsoncollege.qc.ca/my/",
+            "https://dawsoncollege.omnivox.ca/intr/",
+            "https://www.youtube.com/",
+            "https://music.youtube.com/playlist?list=PL-7TWw-bpTejFcOnMqZp6HrpjoRbNVdR0"
+        ]
+    },
+    {
+        "name": "Programming setup",
+        "urls": [
+            "https://github.com/Sebastian42-5?tab=repositories",
+            "https://myninja.ai/",
+            "https://chatgpt.com/",
+            "https://www.youtube.com/",
+            "https://www.online-python.com/"
+        ]
+    },
+    {
+        "name": "Homework programs ",
+        "urls": [
+            "C:\\Users\\sebas\\Desktop\\Word.lnk",
+            "C:\\Users\\Public\\Desktop\\Adobe Acrobat.lnk",
+            "C:\\Users\\sebas\\Desktop\\Visual Studio Code.lnk"
+        ]
+    },
+    {
+        "name": "working on various hw",
+        "urls": [
+            "C:\\Users\\sebas\\Desktop\\Word.lnk",
+            "C:\\Users\\sebas\\Desktop\\Visual Studio Code.lnk",
+            "https://github.com/Sebastian42-5?tab=repositories",
+            "https://www.youtube.com/"
+        ]
+    }
+]
