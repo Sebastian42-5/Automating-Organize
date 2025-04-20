@@ -69,7 +69,7 @@ class ShortcutListWidget(QtWidgets.QListWidget):
 
 class ShortcutTile(QWidget):
 
-    def __init__(self, name):
+    def __init__(self, name, dark_mode = False):
         super().__init__()
 
         layout = QVBoxLayout()
@@ -80,19 +80,33 @@ class ShortcutTile(QWidget):
 
         label.setAlignment(Qt.AlignCenter)
 
+        label.setStyleSheet('font-size: 14px;')
+
 
         layout.addWidget(label)
 
         self.setLayout(layout)
 
+        self.apply_style(dark_mode)
 
-        self.setStyleSheet("""
+
+
+    
+    def apply_style(self, dark_mode):
+        if dark_mode:
+            self.setStyleSheet("""
+            background-color: #3a3a3a;
+            border: 2px solid #666;
+            border-radius: 15px;
+        """)
+        
+        else:
+            self.setStyleSheet("""
             background-color: #f0f0f0;
             border: 2px solid #aaa;
             border-radius: 15px;
-            padding: 6px;
-            margin: 4px;
         """)
+
 
 
 
@@ -108,6 +122,8 @@ class MyWindow(QMainWindow):
         self.setWindowTitle('Tab opener!')
 
         self.setWindowIcon(QIcon(os.path.abspath('shark-icon-size_24.ico')))
+
+        self.dark_mode = False
 
         self.shortcuts = load_shortcuts()
 
@@ -157,6 +173,61 @@ class MyWindow(QMainWindow):
         self.create_btn.clicked.connect(self.open_create_dialog)
 
         self.layout_display.addWidget(self.create_btn, alignment = Qt.AlignRight)
+
+
+        self.dark_mode_btn = QPushButton('Toggle Dark Mode')
+
+        self.dark_mode_btn.setStyleSheet('margin: 10px; padding: 6px 12px;')
+
+        self.dark_mode_btn.clicked.connect(self.toggle_dark_mode)
+
+
+        self.layout_display.addWidget(self.dark_mode_btn, alignment = Qt.AlignRight)
+
+
+    def toggle_dark_mode(self):
+
+        self.dark_mode = not self.dark_mode
+
+        if self.dark_mode:
+            self.setStyleSheet("""
+            QWidget {
+                background-color: #2d2d2d;
+                color: white;
+            }
+
+            QPushButton {
+                background-color: #444;
+                color: white;
+                border-radius: 8px;
+                padding: 6px;
+            }
+
+            QPushButton:hover {
+                background-color: #555;
+            }
+
+            QLineEdit, QPlainTextEdit {
+                background-color: #3b3b3b;
+                color: white;
+                border: 1px solid #666;
+                border-radius: 6px;
+            }
+
+            QListWidget {
+                background-color: #2d2d2d;
+                border: none;
+            }
+
+            QLabel {
+                color: white;
+            }
+        """)
+        else:
+            self.setStyleSheet('')
+        
+        self.refresh_buttons()
+
 
     
     def delete_shortcut_by_name(self, name, widget):
@@ -218,7 +289,7 @@ class MyWindow(QMainWindow):
 
             self.shortcut_list.addItem(item)
 
-            tile = ShortcutTile(shortcut['name'])
+            tile = ShortcutTile(shortcut['name'], self.dark_mode)
 
             tile.setToolTip('Double-click to open, or right-click for more options')
 
