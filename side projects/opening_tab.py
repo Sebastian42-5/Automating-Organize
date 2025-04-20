@@ -1,5 +1,6 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
+from PyQt5 import QtCore
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QWidget, QVBoxLayout, QListWidget
 from PyQt5.QtGui import QIcon
 from functools import partial
@@ -26,13 +27,83 @@ def save_shortcuts(shortcuts):
         json.dump(shortcuts, f, indent = 4)
 
 
+
+class ShortcutListWidget(QtWidgets.QListWidget):
+    def __init__(self, parent= None):
+
+        super().__init__(parent)
+
+        self.parent = parent
+
+    
+    def mousePressEvent(self, event):
+        
+        item = self.itemAt(event.pos())
+
+        if item:
+            index = self.row(item)
+            
+            if event.button() == Qt.RightButton:
+                
+                self.parent.show_context_menu(index, self.mapToGlobal(event.pos()))
+            
+        super().mousePressEvent(event)
+
+
+    def mouseDoubleClickEvent(self, event):
+
+        item = self.itemAt(event.pos())
+
+        if item and event.button() == Qt.LeftButton:
+            index = self.row(item)
+            shortcut = self.parent.shortcuts[index]
+
+            self.parent.open_url_program(shortcut['urls'])
+
+
+        super().mouseDoubleClickEvent(event)
+
+
+
+
+
+class ShortcutTile(QWidget):
+
+    def __init__(self, name):
+        super().__init__()
+
+        layout = QVBoxLayout()
+
+        layout.setContentsMargins(10, 8, 10, 8)
+
+        label = QLabel(name)
+
+        label.setAlignment(Qt.AlignCenter)
+
+
+        layout.addWidget(label)
+
+        self.setLayout(layout)
+
+
+        self.setStyleSheet("""
+            background-color: #f0f0f0;
+            border: 2px solid #aaa;
+            border-radius: 15px;
+            padding: 6px;
+            margin: 4px;
+        """)
+
+
+
+
 class MyWindow(QMainWindow):
 
     def __init__(self):
 
         super(MyWindow, self).__init__()
 
-        self.setGeometry(200, 200, 300, 300)
+        self.setGeometry(200, 200, 300, 500)
 
         self.setWindowTitle('Tab opener!')
 
@@ -60,19 +131,7 @@ class MyWindow(QMainWindow):
 
 
 
-        # self.scroll_area = QtWidgets.QScrollArea()
-
-        # self.scroll_area.setWidgetResizable(True)
-
-        # self.scroll_content = QWidget()
-
-        # self.scroll_layout = QVBoxLayout(self.scroll_content)
-
-        # self.scroll_area.setWidget(self.scroll_content)
-
-        # self.layout_display.addWidget(self.scroll_area)
-
-        self.shortcut_list = QtWidgets.QListWidget()
+        self.shortcut_list = ShortcutListWidget(self)
 
         self.shortcut_list.setDragDropMode(QtWidgets.QAbstractItemView.InternalMove)
 
@@ -109,74 +168,84 @@ class MyWindow(QMainWindow):
             save_shortcuts(self.shortcuts)
 
             self.refresh_buttons()
+    
 
+    def show_context_menu(self, index, position):
+
+        shortcut = self.shortcuts[index]
+
+        menu = QtWidgets.QMenu()
+
+        edit_action = menu.addAction('Edit')
+        delete_action = menu.addAction('Delete')
+        cancel_action = menu.addAction('Cancel')
+
+
+        action = menu.exec_(position)
+
+        if action == edit_action:
+            self.edit_shortcut(index)
         
+        elif action == delete_action:
+            self.delete_shortcut_by_name(shortcut['name'], None)
+
+
+
+    def save_shortcut_order(self):
+        new_order = []
+        for i in range(self.shortcut_list.count()):
+            item = self.shortcut_list.item(i)
+
+            old_index = item.data(Qt.UserRole)
+
+            new_order.append(self.shortcuts[old_index])
+        
+        self.shortcuts = new_order
+
+        save_shortcuts(self.shortcuts)
+
+
 
     def add_shortcut_buttons(self):
 
+        self.shortcut_list.clear()
+
         for i, shortcut in enumerate(self.shortcuts):
-            name = shortcut['name']
-            urls = shortcut['urls']
 
-            row_widget = QWidget()
+            item = QtWidgets.QListWidgetItem()
 
-            row_layout = QtWidgets.QHBoxLayout()
+            item.setSizeHint(QtCore.QSize(180, 80))
 
-            row_widget.setLayout(row_layout)
+            self.shortcut_list.addItem(item)
 
+            tile = ShortcutTile(shortcut['name'])
 
+            tile.setToolTip('Double-click to open, or right-click for more options')
 
-            open_btn = QPushButton(name)
+            self.shortcut_list.setItemWidget(item, tile)
 
-            open_btn.setStyleSheet('padding: 8px; font-size: 14px;')
+            item.setData(Qt.UserRole, i)
 
-            open_btn.clicked.connect(partial(self.open_url_program, urls))
-
-
-
-            edit_btn = QPushButton('✎')
-
-            edit_btn.setMinimumSize(30, 30)
-
-            edit_btn.clicked.connect(partial(self.editshortcut, i))
-
-
-
-
-            delete_btn = QPushButton('X')
-
-            delete_btn.setMinimumSize(30, 30)
-
-            delete_btn.clicked.connect(partial(self.delete_shortcut_by_name, name, row_widget))
-
-
-
-            row_layout.addWidget(open_btn)
-
-            row_layout.addWidget(edit_btn)
-
-            row_layout.addWidget(delete_btn)
-
-
-
-            row_layout.setContentsMargins(0, 0, 0, 0)
-
-            self.scroll_layout.addWidget(row_widget)
 
 
     def open_url_program(self, urls):
 
         for path in urls:
 
-            if isinstance(path, str):
-                if os.path.exists(path):
+            if path.startswith('http://') or path.startswith('https://'):
+    
+                webbrowser.open_new_tab(path)
+
+                time.sleep(0.5)
         
+            else:
+                
+                try:
                     os.startfile(path)
                     time.sleep(2)
-            
-                else:
-                    webbrowser.open_new_tab(path)
-                    time.sleep(0.5)
+                
+                except Exception as e:
+                    QtWidgets.QMessageBox.warning(self, 'Error', f'Could not open program: {path}/n/n{e}')
 
 
     def open_create_dialog(self):
@@ -221,15 +290,6 @@ class MyWindow(QMainWindow):
     
     def refresh_buttons(self):
 
-        while self.scroll_layout.count():
-
-            item = self.scroll_layout.takeAt(0)
-
-            widget = item.widget()
-
-            if widget is not None:
-                widget.setParent(None)
-        
         self.add_shortcut_buttons()
 
 
@@ -327,8 +387,6 @@ class MyWindow(QMainWindow):
         dialog.setLayout(layout)
 
         dialog.exec_()
-
-    
 
 
 def window():

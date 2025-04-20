@@ -1,0 +1,23 @@
+[
+    {
+        "name": "I like frogs",
+        "urls": [
+            "https://dawshacks.com/"
+        ]
+    },
+    {
+        "name": "Marvel Rivals lol",
+        "urls": [
+            "C:\\Users\\sebas\\Desktop\\Marvel Rivals.url"
+        ]
+    },
+    {
+        "name": "hey",
+        "urls": [
+            "https://www.youtube.com/",
+            "C:\\Users\\sebas\\Desktop\\Word.lnk",
+            "C:\\Users\\sebas\\Desktop\\Visual Studio Code.lnk",
+            "https://www.primevideo.com/region/na/storefront"
+        ]
+    }
+]
