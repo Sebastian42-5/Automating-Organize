@@ -110,7 +110,6 @@ class ShortcutTile(QWidget):
 
 
 
-
 class MyWindow(QMainWindow):
 
     def __init__(self):
