@@ -479,10 +479,7 @@ window()
 # pyinstall --onefile opening_tab.py
 
 
-
-# next project: add a edit feature where you can edit the name and the urls on each shortcut 
-
-# expand the app beyond urls and make it also run programs. 
+# add a feature where you can create .py files asking the user for the file name and the directory where they want the .py file to be
 
 
 
