@@ -1,4 +1,4 @@
-('C:\\Users\\sebas\\python-1\\python-2\\side '
+('C:\\Users\\sebas\\Automating-Organize\\side '
  'projects\\build\\opening_tab\\PYZ-00.pyz',
  [('PyQt5',
    'c:\\Users\\sebas\\python-1\\python-2\\.venv\\Lib\\site-packages\\PyQt5\\__init__.py',

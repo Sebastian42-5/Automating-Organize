@@ -1,6 +1,6 @@
 [
     {
-        "name": "Homework setup",
+        "name": "google setup",
         "urls": [
             "https://moodle.dawsoncollege.qc.ca/my/",
             "https://dawsoncollege.omnivox.ca/intr/",
@@ -33,6 +33,19 @@
             "C:\\Users\\sebas\\Desktop\\Visual Studio Code.lnk",
             "https://github.com/Sebastian42-5?tab=repositories",
             "https://www.youtube.com/"
+        ]
+    },
+    {
+        "name": "calc exercises",
+        "urls": [
+            "C:\\Users\\sebas\\Documents\\Cegep docs\\Calculus I and II\\201-SN3-RE-12-Veres.pdf",
+            "C:\\Users\\sebas\\Documents\\Cegep docs\\Calculus I and II\\Single variable essential calculus _ early transcendentals -- James Stewart -- 2, 2012 -- Cengage Learning -- 1133112781 -- 010a024cc3eddb80f72ce301cd0b87f9 -- Anna\u2019s Archive.pdf"
+        ]
+    },
+    {
+        "name": "school folder",
+        "urls": [
+            "C:\\Users\\sebas\\Documents\\Cegep docs"
         ]
     }
 ]
