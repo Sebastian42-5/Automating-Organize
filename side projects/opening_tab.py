@@ -80,7 +80,7 @@ class ShortcutTile(QWidget):
 
         label.setAlignment(Qt.AlignCenter)
 
-        label.setStyleSheet('font-size: 14px;')
+        label.setStyleSheet('font-size: 14px; padding: 4px;')
 
 
         layout.addWidget(label)
@@ -96,17 +96,21 @@ class ShortcutTile(QWidget):
         if dark_mode:
             self.setStyleSheet("""
             background-color: #3a3a3a;
-            border: 2px solid #666;
+            border: 1px solid #666;
             border-radius: 15px;
+            padding: 8px;
+            margin: 6px;
         """)
         
         else:
             self.setStyleSheet("""
-            background-color: #f0f0f0;
-            border: 2px solid #aaa;
+            background-color: #ffffff;
+            border: 1px solid #ccc;
             border-radius: 15px;
+            padding: 8px;
+            margin: 6px;
+            
         """)
-
 
 
 
@@ -139,6 +143,9 @@ class MyWindow(QMainWindow):
 
         self.layout_display = QVBoxLayout(self.central_widget)
 
+        self.layout_display.setContentsMargins(20, 20, 20, 20)
+        self.layout_display.setSpacing(15)
+
         self.label = QLabel('Welcome! Click one of the shortcuts below: ')
         self.label.setStyleSheet('font-size: 16px; font-weight: bold; padding: 10px;')
 
@@ -167,67 +174,113 @@ class MyWindow(QMainWindow):
 
         self.create_btn = QPushButton('Create new shortcut')
 
-        self.create_btn.setStyleSheet('margin: 10px; padding: 6px 12px;')
+        self.create_btn.setFixedSize(150, 40)
 
         self.create_btn.clicked.connect(self.open_create_dialog)
 
-        self.layout_display.addWidget(self.create_btn, alignment = Qt.AlignRight)
-
+    
 
         self.dark_mode_btn = QPushButton('Toggle Dark Mode')
 
-        self.dark_mode_btn.setStyleSheet('margin: 10px; padding: 6px 12px;')
+        self.dark_mode_btn.setFixedSize(150, 40)
 
         self.dark_mode_btn.clicked.connect(self.toggle_dark_mode)
 
 
-        self.layout_display.addWidget(self.dark_mode_btn, alignment = Qt.AlignRight)
+        button_layout = QtWidgets.QHBoxLayout()
+
+        button_layout.setSpacing(10)
+
+        button_layout.addStretch()
+
+        button_layout.addWidget(self.create_btn)
+        button_layout.addWidget(self.dark_mode_btn)
+
+        button_layout.setContentsMargins(0, 0, 0, 0)
+
+        self.layout_display.addLayout(button_layout)
 
 
     def toggle_dark_mode(self):
-
         self.dark_mode = not self.dark_mode
+
+        base_button_style = """
+        QPushButton {
+            border-radius: 8px;
+            padding: 0px;
+            font-size: 14px;
+            width: 150px;
+            height: 40px;
+            max-width: 150px;
+            max-height: 40px;
+            min-width: 150px;
+            min-height: 40px;
+        }
+    """
 
         if self.dark_mode:
             self.setStyleSheet("""
-            QWidget {
-                background-color: #2d2d2d;
-                color: white;
-            }
-
-            QPushButton {
-                background-color: #444;
-                color: white;
-                border-radius: 8px;
-                padding: 6px;
-            }
-
-            QPushButton:hover {
-                background-color: #555;
-            }
-
-            QLineEdit, QPlainTextEdit {
-                background-color: #3b3b3b;
-                color: white;
-                border: 1px solid #666;
-                border-radius: 6px;
-            }
-
-            QListWidget {
-                background-color: #2d2d2d;
-                border: none;
-            }
-
-            QLabel {
-                color: white;
-            }
-        """)
+                QWidget {
+                    background-color: #2d2d2d;
+                    color: white;
+                }
+                """ + base_button_style + """
+                QPushButton {
+                    background-color: #555;
+                    color: white;
+                    border: none;
+                }
+                QPushButton:hover {
+                    background-color: #666;
+                }
+                QListWidget {
+                    background-color: #2d2d2d;
+                    border: none;
+                }
+                QLabel {
+                    color: white;
+                }
+                QLineEdit, QPlainTextEdit {
+                    background-color: #3b3b3b;
+                    color: white;
+                    border: 1px solid #666;
+                    border-radius: 6px;
+                }
+            """)
         else:
-            self.setStyleSheet('')
-        
+            self.setStyleSheet("""
+                QWidget {
+                    background-color: white;
+                    color: black;
+                }
+                """ + base_button_style + """
+                QPushButton {
+                    background-color: #f0f0f0;
+                    color: black;
+                    border: 1px solid #ccc;
+                }
+                QPushButton:hover {
+                    background-color: #e0e0e0;
+                }
+                QListWidget {
+                    background-color: white;
+                    border: none;
+                }
+                QLabel {
+                    color: black;
+                }
+                QLineEdit, QPlainTextEdit {
+                    background-color: white;
+                    color: black;
+                    border: 1px solid #ccc;
+                    border-radius: 6px;
+                }
+            """)
+
+        # Force update of the buttons
+        self.create_btn.updateGeometry()
+        self.dark_mode_btn.updateGeometry()
         self.refresh_buttons()
-
-
     
     def delete_shortcut_by_name(self, name, widget):
         reply = QtWidgets.QMessageBox.question(self, 'Delete Shortcut', f'Are you sure you want to delete {name} ?', QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
