@@ -590,7 +590,7 @@
  'python312.dll',
  False,
  False,
- False,
+ True,
  [],
  None,
  None,
